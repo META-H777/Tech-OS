@@ -39,7 +39,13 @@
   - Ligne 1 : `import { useState... } from "react"` → `const {...} = React;`
   - Ligne 71 : `export default function App` → `function App`
 
-## Étape 5 — Test local (à faire)
+## Étape 5 — Test local ✅
+
+- Serveur local `python3 -m http.server 8910` dans `~/OS-Central/tech-os/cockpit/`
+- App chargée via Chrome sur `http://localhost:8910/`
+- Firebase initialisé sans erreur console
+- Écriture vérifiée : collection `cockpit` créée dans Firestore avec les 3 documents `linkeo_cockpit_2026`, `linkeo_prepa_2026`, `linkeo_v2_2026`
+- Timestamp `updatedAt` fonctionnel
 
 ## Étape 6 — Préparation déploiement GitHub Pages (à faire)
 
