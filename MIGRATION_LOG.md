@@ -47,9 +47,23 @@
 - Écriture vérifiée : collection `cockpit` créée dans Firestore avec les 3 documents `linkeo_cockpit_2026`, `linkeo_prepa_2026`, `linkeo_v2_2026`
 - Timestamp `updatedAt` fonctionnel
 
-## Étape 6 — Préparation déploiement GitHub Pages (à faire)
+## Étape 6 — Déploiement GitHub Pages ✅
 
-## TODO sécurité (avant déploiement public)
+- Repo créé : **https://github.com/META-H777/Tech-OS** (public)
+- Push initial vers `main` (4 commits)
+- GitHub Pages activé sur `main` / `/`
+- URL live : **https://meta-h777.github.io/Tech-OS/**
 
-- Règles Firestore : passer du mode test à des règles nominatives avant 30 jours (limiter à l'app autorisée via auth anonyme ou email).
-- Restriction de domaine sur la clé API (Google Cloud Console) une fois le domaine GitHub Pages connu.
+## Sécurité — Niveau 1 ✅ (19 avril 2026)
+
+- Clé API Firebase restreinte par référent HTTP dans Google Cloud Console :
+  - `https://meta-h777.github.io/*`
+  - `http://localhost:8910/*`
+- Empêche l'utilisation de la clé depuis un autre site que les 2 autorisés.
+
+## Sécurité — Niveaux suivants (à faire avant présentation PDG)
+
+- [ ] **Auth Google** dans l'app (login obligatoire au chargement)
+- [ ] **Règles Firestore nominatives** : autoriser read/write uniquement pour l'UID de Romain
+- [ ] **App Check** (optionnel) pour bloquer les requêtes hors app autorisée
+- [ ] Règles Firestore en mode test expirent le **19 mai 2026**
