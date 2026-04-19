@@ -61,9 +61,11 @@
   - `http://localhost:8910/*`
 - Empêche l'utilisation de la clé depuis un autre site que les 2 autorisés.
 
-## Sécurité — Niveaux suivants (à faire avant présentation PDG)
+## Sécurité — Niveaux suivants
 
-- [ ] **Auth Google** dans l'app (login obligatoire au chargement)
-- [ ] **Règles Firestore nominatives** : autoriser read/write uniquement pour l'UID de Romain
-- [ ] **App Check** (optionnel) pour bloquer les requêtes hors app autorisée
-- [ ] Règles Firestore en mode test expirent le **19 mai 2026**
+**Deadline 1 — 19 mai 2026** ⚠️ : règles Firestore en mode test expirent. App cassée si rien n'est fait.
+**Deadline 2 — fin août 2026** : séminaire PDG Linkeo, présentation du Cockpit.
+
+- [ ] **Auth Google** dans l'app (login obligatoire au chargement) — à faire avant le 19 mai
+- [ ] **Règles Firestore nominatives** : autoriser read/write uniquement pour l'UID de Romain — idem
+- [ ] **App Check** (optionnel) pour bloquer les requêtes hors app autorisée — bonus avant août
