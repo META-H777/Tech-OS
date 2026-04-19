@@ -17,12 +17,33 @@
   - `linkeo_prepa_2026` (prépas RDV)
   - `linkeo_v2_2026` (todos, pipes VA/Renouv/Impayés, notifs, rdvs)
 
-## Étape 2 — Init Git (à venir)
+## Étape 2 — Init Git ✅
 
-## Étape 3 — Firebase (en attente, à créer par Romain)
+- `git init` dans `~/OS-Central/tech-os/cockpit/`
+- `.gitignore` : node_modules, .env, .DS_Store, *.log (firebase-config.js **inclus** dans le repo car public par conception)
+- Commit initial `a9d2ca6` : import Cockpit depuis artifact Claude
 
-## Étape 4 — Intégration Firebase
+## Étape 3 — Firebase ✅
 
-## Étape 5 — Test local
+- Projet créé : **"Lien du cockpit"** (projectId : `cockpit-linkeo`)
+- Firestore activé, région **`eur3` (multi-régions Europe)**, règles mode test (30 jours)
+- App Web enregistrée sous le surnom `cockpit`
 
-## Étape 6 — Préparation déploiement GitHub Pages
+## Étape 4 — Intégration Firebase ✅
+
+- `firebase-config.js` créé avec la config + shim `window.storage` → Firestore
+  - Mapping : chaque clé `linkeo_*` → document dans collection `cockpit`
+  - Permet de préserver **tous** les `window.storage.get/set` de App.jsx sans les réécrire
+- `index.html` : ajout des scripts CDN `firebase-app-compat` et `firebase-firestore-compat` + chargement de `firebase-config.js`
+- `App.jsx` conversions :
+  - Ligne 1 : `import { useState... } from "react"` → `const {...} = React;`
+  - Ligne 71 : `export default function App` → `function App`
+
+## Étape 5 — Test local (à faire)
+
+## Étape 6 — Préparation déploiement GitHub Pages (à faire)
+
+## TODO sécurité (avant déploiement public)
+
+- Règles Firestore : passer du mode test à des règles nominatives avant 30 jours (limiter à l'app autorisée via auth anonyme ou email).
+- Restriction de domaine sur la clé API (Google Cloud Console) une fois le domaine GitHub Pages connu.

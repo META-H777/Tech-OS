@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useMemo } from "react";
+const { useState, useEffect, useCallback, useMemo } = React;
 
 const MONTHS=["Janvier","Février","Mars","Avril","Mai","Juin","Juillet","Août","Septembre","Octobre","Novembre","Décembre"];
 const SHORT=["Jan","Fév","Mar","Avr","Mai","Jun","Jul","Aoû","Sep","Oct","Nov","Déc"];
@@ -68,7 +68,7 @@ function PerfChart({m}){
   );
 }
 
-export default function App(){
+function App(){
   const[data,setData]=useState(defaultData);const[loaded,setLoaded]=useState(false);const[activeTab,setActiveTab]=useState("dashboard");const[openMonths,setOpenMonths]=useState({});
   const[prepaWeek,setPrepaWeek]=useState(()=>{const n=new Date(),s=new Date(n.getFullYear(),0,1);return Math.ceil(((n-s)/86400000+s.getDay()+1)/7)});
   const[prepaData,setPrepaData]=useState({});const[openFiches,setOpenFiches]=useState({});const[copyMsg,setCopyMsg]=useState("");
