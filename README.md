@@ -1,30 +1,17 @@
 # 🚀 TECH OS — LINKEO COCKPIT 2026
 
-Tableau de bord commercial intelligent pour technico-commercial Linkeo.
+Tableau de bord commercial intelligent pour technico-commercial Linkeo. Stocké dans Firebase Firestore pour synchro multi-appareils (PC pro ↔ Mac).
 
 ## Structure du projet
 
 ```
 cockpit/
-├── App.jsx          # Code source React (single-file, ~450 lignes)
-├── index.html       # Point d'entrée HTML (React + Babel via CDN)
-└── README.md        # Ce fichier
+├── App.jsx             # Code source React (single-file)
+├── index.html          # Point d'entrée HTML (React + Babel + Firebase via CDN)
+├── firebase-config.js  # Config Firebase + shim window.storage → Firestore
+├── MIGRATION_LOG.md    # Historique de la migration depuis l'artifact Claude
+└── README.md           # Ce fichier
 ```
-
-## Lancer en local
-
-1. Ouvrir un terminal dans le dossier `cockpit/`
-2. Lancer un serveur local :
-   ```bash
-   # Avec Python
-   python3 -m http.server 8080
-
-   # Ou avec Node
-   npx serve .
-   ```
-3. Ouvrir `http://localhost:8080` dans le navigateur
-
-> ⚠️ Le fichier JSX ne peut pas être ouvert directement en double-cliquant sur index.html (CORS). Il faut un serveur local.
 
 ## Les 6 sections de l'app
 
@@ -37,26 +24,38 @@ cockpit/
 | 📌 **Cadre** | Rappel (cadre pro/perso, missions, priorités, KPIs), Primes (avenant 11 sources), Feedback (Sam + Arthur), Vision IA |
 | 🔮 **Améliorations** | Roadmap produit : notifications, carte Google Maps, wiki produits, prépas auto, assistant IA 24/7 |
 
-## Stockage actuel
+## Stockage — Firestore
 
-3 clés `localStorage` :
+Collection `cockpit`, 3 documents :
 - `linkeo_cockpit_2026` — Données mensuelles (12 mois × 9 champs)
 - `linkeo_prepa_2026` — Prépas RDV par semaine (trajets + fiches)
 - `linkeo_v2_2026` — Todos, pipelines VA/Renouvs/Impayés, notifications, RDVs
 
-## Dépendances
+## Lancer en local
 
-- React 18.x (via CDN)
-- React DOM 18.x (via CDN)
-- Babel Standalone (via CDN, pour compilation JSX en ligne)
-- Aucune autre librairie
+```bash
+cd cockpit/
+python3 -m http.server 8910
+```
+Puis ouvrir `http://localhost:8910/` dans le navigateur.
 
-## Migration prévue
+> ⚠️ Ne pas ouvrir `index.html` directement (protocole `file://` → CORS bloque le chargement de `App.jsx`).
 
-- [ ] Remplacer `window.storage` (Claude) par `localStorage` (navigateur)
-- [ ] Intégrer Firebase Firestore pour synchro cloud PC ↔ téléphone
-- [ ] Déployer sur GitHub Pages
-- [ ] Auth Google pour sécuriser les données
+## Dépendances (toutes via CDN)
+
+- React 18.x + React DOM 18.x
+- Babel Standalone (JSX en ligne)
+- Firebase App Compat 10.x + Firestore Compat 10.x
+
+## Déploiement
+
+Hébergé sur GitHub Pages, branche `main`, racine du repo.
+
+## Sécurité — TODO avant usage en production
+
+- [ ] Passer les règles Firestore du mode test à des règles nominatives (auth Google + restriction par UID)
+- [ ] Restreindre la clé API par domaine (Google Cloud Console → Identifiants → Restrictions de référents HTTP)
+- [ ] App Check pour bloquer les requêtes hors app autorisée
 
 ## Design
 
