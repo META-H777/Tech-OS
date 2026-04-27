@@ -55,7 +55,7 @@ function Hero({m,monthName}){
           <span className="os-chip">FIRESTORE LIVE</span>
         </div>
       </div>
-      <div style={{display:"grid",gridTemplateColumns:"minmax(0,1.3fr) minmax(0,1fr)",gap:28,alignItems:"end",marginBottom:28}}>
+      <div className="os-hero-row">
         <div>
           <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:10,letterSpacing:"0.22em",textTransform:"uppercase",color:"rgba(255,255,255,0.5)",marginBottom:14}}>Performance globale du mois</div>
           <div className="os-hero__big">
@@ -139,7 +139,7 @@ function AnnualView({data,primes,currentIdx,openMonths,toggleMonth,update}){
       {/* Header annuel — KPI géant */}
       <div className="os-card os-hud" style={{marginBottom:18,padding:"28px 32px",position:"relative",overflow:"hidden"}}>
         <div style={{position:"absolute",inset:0,background:"radial-gradient(800px 400px at 80% 20%, rgba(59,130,246,0.18), transparent 60%)",pointerEvents:"none"}}/>
-        <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-end",gap:24,flexWrap:"wrap",position:"relative",zIndex:1}}>
+        <div className="os-annual-head-row" style={{position:"relative",zIndex:1}}>
           <div>
             <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:10,letterSpacing:"0.22em",textTransform:"uppercase",color:"rgba(255,255,255,0.5)",marginBottom:10}}>Cumul annuel · 2026</div>
             <div style={{fontFamily:"'Inter',sans-serif",fontSize:56,fontWeight:800,letterSpacing:"-0.04em",lineHeight:0.95,display:"flex",alignItems:"baseline",gap:12}}>
@@ -154,7 +154,7 @@ function AnnualView({data,primes,currentIdx,openMonths,toggleMonth,update}){
               <span>atteinte MB <b style={{color:yearPct>=80?"#3B82F6":"#60A5FA",fontFamily:"'JetBrains Mono',monospace"}}>{yearPct}%</b></span>
             </div>
           </div>
-          <div style={{display:"grid",gridTemplateColumns:"repeat(4,minmax(60px,1fr))",gap:10}}>
+          <div className="os-grid-4">
             {[
               ["Réalisé MB",fmt(yearMB)+" €"],
               ["Objectif MB",fmt(yearObjMB)+" €"],
@@ -312,7 +312,7 @@ function MonthLive({m,idx,monthName,update}){
       </div>
 
       {/* Top : cercle global + 6 mini-stats en grille */}
-      <div style={{padding:"22px 24px",display:"grid",gridTemplateColumns:"160px 1fr",gap:24,alignItems:"center",borderBottom:"1px solid rgba(255,255,255,0.06)"}}>
+      <div className="os-monthlive-top">
         {/* Cercle global mana — flux lumineux animé */}
         <div style={{position:"relative",width:140,height:140,margin:"0 auto"}}>
           <svg viewBox="0 0 140 140" style={{width:"100%",height:"100%",display:"block",overflow:"visible"}}>
@@ -339,7 +339,7 @@ function MonthLive({m,idx,monthName,update}){
           </svg>
         </div>
         {/* 6 mini stats grille 3x2 */}
-        <div style={{display:"grid",gridTemplateColumns:"repeat(3,minmax(0,1fr))",gap:10}}>
+        <div className="os-grid-3">
           {metrics.map((mt,i)=>(
             <div key={i} style={{padding:"10px 12px",background:"rgba(255,255,255,0.025)",border:"1px solid rgba(255,255,255,0.06)",borderRadius:10,transition:"background 0.2s, border-color 0.2s",cursor:"default"}} onMouseEnter={e=>{e.currentTarget.style.background="rgba(59,130,246,0.06)";e.currentTarget.style.borderColor="rgba(59,130,246,0.2)"}} onMouseLeave={e=>{e.currentTarget.style.background="rgba(255,255,255,0.025)";e.currentTarget.style.borderColor="rgba(255,255,255,0.06)"}}>
               <div style={{display:"flex",justifyContent:"space-between",alignItems:"baseline",marginBottom:6}}>
@@ -356,7 +356,7 @@ function MonthLive({m,idx,monthName,update}){
       {/* Bottom : saisie KPIs en grille 3 colonnes */}
       <div style={{padding:"18px 24px",borderBottom:"1px solid rgba(255,255,255,0.06)"}}>
         <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:9,color:"rgba(255,255,255,0.4)",letterSpacing:"0.18em",textTransform:"uppercase",marginBottom:12}}>Saisie du mois</div>
-        <div style={{display:"grid",gridTemplateColumns:"repeat(3,minmax(0,1fr))",gap:10}}>
+        <div className="os-grid-3">
           {fields.map(f=>(
             <div key={f.k} style={{display:"flex",alignItems:"center",gap:8,padding:"7px 10px",background:"rgba(255,255,255,0.025)",border:"1px solid rgba(255,255,255,0.06)",borderRadius:8,transition:"border-color 0.15s"}}>
               <span style={{fontSize:13}}>{f.icon}</span>
@@ -371,7 +371,7 @@ function MonthLive({m,idx,monthName,update}){
       {/* Détail prime — pliable */}
       <div style={{padding:"16px 24px"}}>
         <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:9,color:"rgba(255,255,255,0.4)",letterSpacing:"0.18em",textTransform:"uppercase",marginBottom:10}}>Détail prime</div>
-        <div style={{display:"grid",gridTemplateColumns:"repeat(3,minmax(0,1fr))",gap:6}}>
+        <div className="os-grid-3" style={{gap:6}}>
           {primeLines.map((p,i)=>(
             <div key={i} style={{display:"flex",justifyContent:"space-between",padding:"5px 10px",background:"rgba(255,255,255,0.02)",borderRadius:6,fontSize:11}}>
               <span style={{color:"rgba(255,255,255,0.55)"}}>{p.l}</span>
@@ -572,7 +572,7 @@ function App(){
   <Hero m={currentM} monthName={MONTHS[currentIdx]}/>
 
   {/* Bandeau rappels permanents — Plan d'action + Mois référence */}
-  <div style={{display:"grid",gridTemplateColumns:"repeat(2,minmax(0,1fr))",gap:14,marginBottom:18}}>
+  <div className="os-grid-2" style={{marginBottom:18}}>
     <div className="os-card os-hud" style={{borderLeft:"2px solid #60A5FA"}}>
       <div className="os-card__head" style={{padding:"12px 16px"}}>
         <div className="os-card__title">
@@ -815,7 +815,7 @@ function App(){
 
   return(<div className="os-rise">
     {/* Header stats */}
-    <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:8,marginBottom:12}}>
+    <div className="os-grid-3" style={{gap:8,marginBottom:12}}>
       <div style={{background:"#14141C",border:"1px solid #252540",borderRadius:10,padding:"10px 8px",textAlign:"center"}}>
         <div style={{fontSize:8,color:"#A0A4B0",letterSpacing:".08em"}}>VISITES</div>
         <div style={{fontFamily:"'Inter',sans-serif",fontSize:22,fontWeight:700,color:nb>=41?"#3B82F6":nb>=30?"#3B82F6":"#60A5FA"}}>{nb}</div>
@@ -1023,7 +1023,7 @@ function App(){
   </div>
 
   {/* Cadre quotidien — Pro + Perso côte à côte */}
-  <div style={{display:"grid",gridTemplateColumns:"repeat(2,minmax(0,1fr))",gap:14,marginBottom:18}}>
+  <div className="os-grid-2" style={{marginBottom:18}}>
     <div className="os-card os-hud">
       <div className="os-card__head" style={{padding:"14px 18px"}}>
         <div className="os-card__title">
@@ -1076,7 +1076,7 @@ function App(){
       </div>
       <div style={{marginTop:14,paddingTop:14,borderTop:"1px solid rgba(255,255,255,0.06)"}}>
         <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:9,color:"rgba(255,255,255,0.4)",letterSpacing:"0.18em",textTransform:"uppercase",marginBottom:10}}>Cibles mensuelles</div>
-        <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:10}}>
+        <div className="os-grid-4">
           {[["Renouv","120%"],["VA","3-6K €"],["Impayés","10%"],["Visites","41"]].map(([l,v])=>(
             <div key={l} style={{padding:"12px 14px",background:"rgba(255,255,255,0.025)",border:"1px solid rgba(255,255,255,0.06)",borderRadius:10,textAlign:"center"}}>
               <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:9,letterSpacing:"0.12em",textTransform:"uppercase",color:"rgba(255,255,255,0.5)",marginBottom:6}}>{l}</div>
@@ -1134,7 +1134,7 @@ function App(){
       </div>
       <div style={{padding:"16px 18px",background:"linear-gradient(135deg,rgba(59,130,246,0.10),rgba(59,130,246,0.04))",border:"1px solid rgba(59,130,246,0.3)",borderRadius:12}}>
         <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:10,letterSpacing:"0.22em",textTransform:"uppercase",color:"rgba(255,255,255,0.65)",marginBottom:10,display:"flex",alignItems:"center",gap:8}}><span>★</span><span>Mois idéal — détail</span></div>
-        <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:6,marginBottom:12}}>
+        <div className="os-grid-3" style={{gap:6,marginBottom:12}}>
           {[["Visites","1 000€"],["VA","540€"],["Parrainages","1 000€"],["Prime MB","600€"],["Bonus 150%","500€"],["Impayés","200€"]].map(([l,v])=>(
             <div key={l} style={{display:"flex",justifyContent:"space-between",padding:"5px 10px",background:"rgba(255,255,255,0.02)",borderRadius:6,fontSize:12}}>
               <span style={{color:"rgba(255,255,255,0.6)"}}>{l}</span>

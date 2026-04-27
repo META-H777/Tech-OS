@@ -1102,6 +1102,156 @@ body::before {
 }
 
 /* =========================================================
+   Utilitaires de grille responsives
+   ========================================================= */
+.os-grid-2 {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+.os-grid-3 {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+.os-grid-4 {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+.os-grid-3-2 {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+.os-hero-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
+  gap: 28px;
+  align-items: end;
+  margin-bottom: 28px;
+}
+.os-monthlive-top {
+  padding: 22px 24px;
+  display: grid;
+  grid-template-columns: 160px 1fr;
+  gap: 24px;
+  align-items: center;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+.os-annual-head-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+/* =========================================================
+   RESPONSIVE — adaptations pour téléphone (no touch desktop)
+   ========================================================= */
+
+/* ≤ 900px : tablette + grand mobile */
+@media (max-width: 900px) {
+  .os-grid-3 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .os-grid-4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .os-grid-3-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+
+  .os-hero-row { grid-template-columns: 1fr; gap: 18px; align-items: stretch; }
+  .os-monthlive-top { grid-template-columns: 1fr; gap: 16px; padding: 18px; }
+  .os-monthlive-top > div:first-child { margin: 0 auto; }
+
+  .os-card__head { padding: 12px 14px; flex-wrap: wrap; }
+  .os-card__body { padding: 14px; }
+}
+
+/* ≤ 700px : mobile standard */
+@media (max-width: 700px) {
+  .os-topbar {
+    height: auto;
+    min-height: 60px;
+    padding: 10px 16px;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .os-topbar__brand { font-size: 13px; gap: 8px; }
+  .os-topbar__brand span:not(.os-brand-os) { display: none; }
+  .os-brand-os { font-size: 9px; padding: 3px 6px; }
+
+  .os-tabs {
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    -webkit-overflow-scrolling: touch;
+    padding: 4px;
+    scrollbar-width: none;
+  }
+  .os-tabs::-webkit-scrollbar { display: none; }
+  .os-tab { padding: 6px 12px; font-size: 12px; flex-shrink: 0; }
+
+  /* Canvas principal — réduire padding */
+  .os-app > div[style*="maxWidth"] {
+    padding-left: 14px !important;
+    padding-right: 14px !important;
+  }
+
+  /* Grilles → 1 colonne */
+  .os-grid-2 { grid-template-columns: 1fr; gap: 12px; }
+  .os-grid-3 { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+  .os-grid-4 { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+  .os-grid-3-2 { grid-template-columns: 1fr; gap: 8px; }
+
+  /* Hero */
+  .os-hero { padding: 22px 18px 24px; }
+  .os-hero__big { font-size: 56px; gap: 8px; }
+  .os-hero__big .unit { font-size: 22px; }
+  .os-hero__cells { grid-template-columns: 1fr 1fr; }
+  .os-hero__cell { padding: 12px 14px; }
+  .os-hero__cell-val { font-size: 22px; }
+
+  /* MonthLive */
+  .os-monthlive-top { padding: 16px; }
+
+  /* Annuel header */
+  .os-annual-head-row { flex-direction: column; align-items: stretch; gap: 18px; }
+
+  /* Roadmap timeline — réduire indentation */
+  .os-roadmap { padding-left: 36px; }
+  .os-roadmap::before { left: 13px; }
+  .os-roadmap__node { left: -32px; width: 14px; height: 14px; }
+
+  /* Canvas head — taille de titre */
+  .os-canvas-head h1 { font-size: 24px; line-height: 1.15; }
+  .os-canvas-head h1 em { font-size: 22px; }
+
+  /* HUD brackets plus petits */
+  .os-hud::before, .os-hud::after { width: 10px; height: 10px; }
+
+  /* Inputs / boutons */
+  .os-input { font-size: 16px !important; /* iOS no zoom */ }
+  .os-btn { height: 38px; padding: 0 12px; font-size: 13px; }
+}
+
+/* ≤ 480px : petit mobile */
+@media (max-width: 480px) {
+  .os-grid-3 { grid-template-columns: 1fr; }
+  .os-grid-4 { grid-template-columns: 1fr 1fr; }
+
+  .os-hero { padding: 18px 14px 22px; }
+  .os-hero__big { font-size: 44px; }
+  .os-hero__big .unit { font-size: 18px; }
+  .os-hero__cells { grid-template-columns: 1fr; }
+
+  .os-canvas-head h1 { font-size: 20px; }
+  .os-canvas-head h1 em { font-size: 18px; }
+
+  .os-card__head { padding: 10px 12px; }
+  .os-card__body { padding: 12px; }
+
+  .os-roadmap { padding-left: 32px; }
+  .os-roadmap__node { left: -28px; width: 12px; height: 12px; }
+}
+
+/* =========================================================
    Réduit motion (accessibilité)
    ========================================================= */
 @media (prefers-reduced-motion: reduce) {
