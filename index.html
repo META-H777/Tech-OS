@@ -3,20 +3,23 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#05080f">
+  <meta name="theme-color" content="#050509">
   <title>TECH OS — LINKEO COCKPIT 2026</title>
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { background: #05080f; overflow-x: hidden; }
-    ::-webkit-scrollbar { width: 5px; }
-    ::-webkit-scrollbar-track { background: #0a0f1a; }
-    ::-webkit-scrollbar-thumb { background: #0077aa; border-radius: 3px; }
-  </style>
+
+  <!-- Fonts du Design System -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+
+  <!-- Design system Tech OS -->
+  <link rel="stylesheet" href="./tech-os.css">
+
+  <!-- React + Babel (compilation JSX en navigateur) -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.9/babel.min.js"></script>
 
-  <!-- Firebase SDK (compat mode, compatible avec les scripts classiques) -->
+  <!-- Firebase SDK (compat mode) -->
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
   <script src="./firebase-config.js"></script>
@@ -26,6 +29,18 @@
   <script type="text/babel" src="App.jsx"></script>
   <script type="text/babel">
     ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
+  </script>
+
+  <!-- Magnetic spotlight des KPI cards (suivi souris) -->
+  <script>
+    document.addEventListener('mousemove', (e) => {
+      document.querySelectorAll('.os-kpi').forEach(el => {
+        const r = el.getBoundingClientRect();
+        if (e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom) return;
+        el.style.setProperty('--mx', ((e.clientX - r.left) / r.width * 100) + '%');
+        el.style.setProperty('--my', ((e.clientY - r.top) / r.height * 100) + '%');
+      });
+    });
   </script>
 </body>
 </html>

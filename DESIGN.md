@@ -1,126 +1,134 @@
 ---
-version: alpha
-name: Tech OS — Linkeo Cockpit
-description: Système de design du Cockpit Linkeo de Romain Patry. Dashboard commercial React/Firebase, dark mode professionnel avec accents bleu nuit et cyan. Orienté données et KPIs.
+version: 1.0
+name: Tech OS — Linkeo Cockpit 2026
+description: Design system clair-dominant + accents néon bleu royal. Inspiré Linear / Vercel / Stripe / Apple Vision OS, avec rigueur d'outil terrain. Hero sombre + canvas clair, accent unique, glows maîtrisés.
 colors:
-  background: "#05080f"
-  background-2: "#0a0f1a"
-  surface: "#0d1520"
-  surface-raised: "#111827"
-  border: "#0077aa"
-  border-subtle: "rgba(0,119,170,0.3)"
-  primary: "#00aaff"
-  primary-glow: "rgba(0,170,255,0.15)"
-  success: "#10b981"
-  warning: "#f59e0b"
-  danger: "#ef4444"
-  text-full: "#ffffff"
-  text-mid: "rgba(255,255,255,0.7)"
-  text-dim: "rgba(255,255,255,0.4)"
+  ink: "#0A0A0F"
+  ink-2: "#14141C"
+  ink-3: "#1F1F2A"
+  paper: "#FAFAFB"
+  paper-2: "#F2F3F5"
+  paper-3: "#E7E8EC"
+  line: "#DCDDE3"
+  line-strong: "#C2C4CD"
+  muted: "#6B6F7B"
+  muted-2: "#9498A3"
+  blue: "#3B82F6"
+  blue-deep: "#1D4ED8"
+  blue-soft: "#EFF4FF"
+  blue-glow-rgb: "59 130 246"
+  green: "#10A777"
+  amber: "#D97706"
+  red: "#DC2626"
 typography:
-  headline:
-    fontFamily: Inter
-    fontSize: 20px
+  font-sans: "'Inter', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif"
+  font-mono: "'JetBrains Mono', 'SF Mono', Menlo, monospace"
+  font-serif: "'Instrument Serif', Georgia, serif"
+  display:
+    fontSize: "96-128px"
+    fontWeight: "800"
+    letterSpacing: "-0.06em"
+  h1:
+    fontSize: "32-44px"
     fontWeight: "700"
-    letterSpacing: -0.01em
-  subheadline:
-    fontFamily: Inter
-    fontSize: 14px
+    letterSpacing: "-0.035em"
+    lineHeight: "1.05"
+  card-title:
+    fontSize: "13-14px"
     fontWeight: "600"
   body:
-    fontFamily: Inter
-    fontSize: 13px
-    fontWeight: "400"
-    lineHeight: 1.5
-  data:
-    fontFamily: JetBrains Mono
-    fontSize: 13px
-    fontWeight: "400"
-  kpi:
-    fontFamily: JetBrains Mono
-    fontSize: 24px
-    fontWeight: "700"
-  label:
-    fontFamily: Inter
-    fontSize: 11px
+    fontSize: "14px"
+    lineHeight: "1.5"
+  label-mono:
+    fontSize: "10-11px"
     fontWeight: "500"
-    letterSpacing: 0.05em
+    letterSpacing: "0.18em"
+    textTransform: "uppercase"
+  kpi:
+    fontSize: "36-44px"
+    fontWeight: "700-800"
+    letterSpacing: "-0.03em"
+    fontVariantNumeric: "tabular-nums"
 rounded:
-  sm: 4px
-  md: 8px
-  lg: 12px
-  xl: 16px
-spacing:
-  xs: 4px
-  sm: 8px
-  md: 16px
-  lg: 24px
-  xl: 32px
-components:
-  kpi-card:
-    background: "{colors.surface}"
-    border: "1px solid {colors.border-subtle}"
-    borderRadius: "{rounded.lg}"
-    padding: "{spacing.md}"
-  table-row:
-    borderBottom: "1px solid rgba(255,255,255,0.05)"
-    padding: "10px {spacing.md}"
-  badge-success:
-    background: "rgba(16,185,129,0.15)"
-    color: "{colors.success}"
-    borderRadius: "{rounded.sm}"
-    padding: "2px 8px"
-  badge-warning:
-    background: "rgba(245,158,11,0.15)"
-    color: "{colors.warning}"
-    borderRadius: "{rounded.sm}"
-    padding: "2px 8px"
-  badge-danger:
-    background: "rgba(239,68,68,0.15)"
-    color: "{colors.danger}"
-    borderRadius: "{rounded.sm}"
-    padding: "2px 8px"
+  sm: "6px"
+  md: "10px"
+  lg: "16px"
+  xl: "24px"
+shadows:
+  sh-1: "0 1px 2px rgba(10,10,15,.04), 0 1px 1px rgba(10,10,15,.03)"
+  sh-2: "0 4px 12px rgba(10,10,15,.06), 0 2px 4px rgba(10,10,15,.03)"
+  sh-3: "0 12px 32px rgba(10,10,15,.08), 0 4px 8px rgba(10,10,15,.04)"
 ---
 
 ## Vue d'ensemble
 
-Le Cockpit Linkeo est un **dashboard commercial** interne pour suivre les KPIs de performance de Romain en tant que technico-commercial. Built en React + Firebase. Le design est **professionnel dark**, orienté données : lisibilité maximale des chiffres, hiérarchie visuelle claire, densité d'information élevée.
+Le Cockpit Linkeo est un **dashboard commercial** B2B pour le suivi des KPIs de Romain. Build React + Firebase. Esthétique **minimaliste, ultra-moderne, com digitale 2026** : clair dominant, accents néon bleus, micro-textures et glows maîtrisés. Inspiration : Linear, Vercel, Stripe Dashboard, Apple Vision OS — avec rigueur d'un outil terrain.
 
-L'esthétique s'inspire des dashboards SaaS pro (Linear, Vercel, Raycast) : fond très sombre, accents bleu-cyan froids, typographie Inter clean, monospace pour les données.
+## Principes (immuables)
 
-## Couleurs
+1. **Une seule couleur d'accent** : bleu royal (`#3B82F6`). Jamais de rainbow.
+2. **Beaucoup d'air** + hiérarchie typographique forte.
+3. **Néons réservés** aux KPIs critiques et aux états vivants (live, actif).
+4. **Contraste sombre vs clair** (hero noir profond, dashboard clair). Pas via la couleur.
+5. **Aucune décoration gratuite** : chaque élément a une fonction.
 
-- **Bleu-cyan (#00aaff)** : couleur d'accentuation principale — liens, KPIs clés, éléments interactifs.
-- **Vert (#10b981)** : succès, objectifs atteints, tendances positives.
-- **Orange/Ambre (#f59e0b)** : alertes modérées, objectifs en approche.
-- **Rouge (#ef4444)** : alertes critiques, objectifs manqués.
-- Les fonds restent dans la gamme #05→#15 pour maximiser le contraste des données.
+## Patterns signature (à appliquer)
 
-## Typographie
+| Pattern | Quand | Classes |
+|---|---|---|
+| **Hero sombre** | Top du dashboard, 1 fois max par page | `.hero` + radial gradients bleu + grille |
+| **KPI néon** | Le KPI critique du moment (1-2 max) | `.kpi--neon` |
+| **Live dot pulsé** | Donnée temps-réel ou état actif | `.live-dot` + ring animé |
+| **Card hover spotlight** | Toutes les KPI cards | `.kpi` + spotlight bleu radial qui suit la souris |
+| **Topbar frostée** | Navigation principale | `.topbar` + backdrop-filter blur |
+| **Tabs pill** | Switch d'onglets | `.topbar__nav` + `.tab` |
+| **Aurore ambiante** | Fond global discret | `.app::before` + animation 24s |
+| **Animation rise** | Entrée des sections au montage | `@keyframes rise` 0.6s |
+| **Italique serif** | 1 mot d'accent dans le titre principal (jamais ailleurs) | `font-family: var(--font-serif)` italique |
 
-- **Inter** — typo principale. Utilisée pour tout texte UI : labels, descriptions, navigation. Claire, neutre, professionnelle.
-- **JetBrains Mono** — exclusivement pour les valeurs numériques (CA, scores, ratios, pourcentages). Alignement parfait des colonnes de données.
+## Règles d'usage composants
 
-## Composants
+| Composant | Règle |
+|---|---|
+| Hero | Une seule fois par page, en haut. Toujours sombre. |
+| KPI carte | Max 4 par ligne. Une seule peut être en `--neon` (KPI critique). |
+| Bouton bleu | Réservé à l'action principale d'un écran (1 par vue). |
+| Bouton ink (noir) | Action secondaire affirmée. |
+| Chip bleu | Période active, statut "en cours", tag néon. |
+| Live dot | Uniquement quand la donnée est temps-réel. |
+| Italique serif | 1 mot/locution par titre principal, jamais ailleurs. |
+| Glow néon | KPI phare, état actif. **Jamais sur du texte courant.** |
 
-### KPI Cards
-Bordure subtile bleu-cyan (30% opacité). Background légèrement surélevé par rapport au fond. La valeur principale en JetBrains Mono 24px bold. Le label en Inter 11px semi-transparent.
+## À ne PAS faire (rappels)
 
-### Tableaux
-Rows séparées par des bordures très subtiles (5% blanc). Pas de fond alterné — trop lourd visuellement. Hover possible avec un fond légèrement surélevé.
+- ❌ Arc-en-ciel multicolore (l'ancien TECH OS en avait, c'était trop)
+- ❌ Gradients agressifs sur fonds de carte
+- ❌ Emojis dans l'UI (à terme : icônes lucide-style 1.6px stroke — *transition tolérée pour cette première passe*)
+- ❌ Border-radius supérieur à 24px sur cards
+- ❌ Shadows plus marquées que `--sh-3`
+- ❌ Glow néon sur texte courant — uniquement chiffres KPI et états
+- ❌ Plus d'une couleur d'accent (le bleu, point)
+- ❌ Couleurs bannies : doré (`#ffd700`), violet (`#aa66ff`), cyan saturé (`#00b4ff`)
+- ❌ Fonts bannies : Orbitron, Rajdhani
 
-### Badges de statut
-Fond coloré à 15% d'opacité + texte plein coloré. Coins légèrement arrondis (4px). Compact (padding 2px 8px).
+## Iconographie (futur)
 
-### Navigation
-Latérale sur desktop, bottom bar sur mobile. Couleur active = primary (#00aaff). Sous-texte en Inter 12px.
+Style **Lucide / Heroicons outline** : stroke 1.6px, line-cap round, line-join round, viewBox 24×24. Couleur héritée de `currentColor`. Taille 14–16px UI, 12px chips. *Pour cette refonte v1, on garde temporairement les emojis existants.*
 
-## Règles d'usage pour les agents IA
+## Responsive
 
-1. Toutes les valeurs numériques (CA, scores, pourcentages, rangs) en JetBrains Mono.
-2. Statuts : success/warning/danger uniquement — pas d'autres couleurs pour les badges.
-3. Ne pas utiliser de fond blanc ou lumineux — le dashboard reste toujours dark.
-4. La hiérarchie : KPI en grand → Label en petit → Détail en micro.
-5. Pas d'animations complexes sur les données — la clarté prime sur l'effet.
-6. Les graphiques : fond transparent, grilles subtiles (5% blanc), valeurs en mono.
-7. Firebase = source de vérité pour toutes les données — pas de mocks statiques.
+- Desktop ≥ 1100px : layout pleine grille
+- Tablet 720–1099 : grilles 2 colonnes, hero stacké
+- Mobile < 720 : 1 colonne, hero KPI à 56px, padding réduit
+
+## Accessibilité
+
+- Contraste minimum AA partout (texte sur fond clair : `--ink` sur `--paper` = 18:1)
+- Focus visible : `outline: 2px solid var(--blue); outline-offset: 2px;`
+- `prefers-reduced-motion` : couper aurora, ring, shimmer
+
+## Implémentation
+
+- **`tech-os.css`** : tokens + composants (fusion stylée de styles.css + wow.css du handoff)
+- **`index.html`** : charge Inter + JetBrains Mono + Instrument Serif + tech-os.css
+- **`App.jsx`** : utilise les tokens via inline styles ou classes signatures du CSS
