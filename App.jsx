@@ -479,9 +479,9 @@ function Ticker({reminders}){
       // Le track contenant 2 passes identiques fait alors ≥ 2.4 × container → seamless garanti.
       // Plancher à 4 répétitions (sécurité visuelle même sur écran ultra-large avec mesure foireuse).
       const neededReps=Math.max(4,Math.ceil((containerW*1.2)/naturalPassW));
-      // Vitesse cible ~80 px/s — durée d'1 passe finale = naturalPassW × reps / 80
+      // Vitesse cible ~50 px/s (lecture posée, pas pressée) — durée d'1 passe finale = naturalPassW × reps / 50
       const finalPassW=naturalPassW*neededReps;
-      const newDuration=Math.max(18,Math.min(90,Math.round(finalPassW/80)));
+      const newDuration=Math.max(25,Math.min(140,Math.round(finalPassW/50)));
       if(neededReps!==reps)setReps(neededReps);
       if(Math.abs(newDuration-duration)>=2)setDuration(newDuration);
     };
