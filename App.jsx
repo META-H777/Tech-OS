@@ -3,7 +3,8 @@ const { useState, useEffect, useCallback, useMemo } = React;
 const MONTHS=["Janvier","Février","Mars","Avril","Mai","Juin","Juillet","Août","Septembre","Octobre","Novembre","Décembre"];
 const SHORT=["Jan","Fév","Mar","Avr","Mai","Jun","Jul","Aoû","Sep","Oct","Nov","Déc"];
 function defaultData(){const d=MONTHS.map(()=>({objMB:0,realMB:0,visites:0,nbVA:0,va:0,parrSig:0,parrColl:0,avis:0,impayes:0}));d[0]={objMB:29979,realMB:8585,visites:28,nbVA:0,va:0,parrSig:4,parrColl:1,avis:10,impayes:0};d[1]={objMB:35521,realMB:0,visites:0,nbVA:0,va:0,parrSig:0,parrColl:2,avis:0,impayes:0};return d;}
-const calcPV=v=>{if(v<=0)return 0;if(v<=30)return v*15;if(v<=40)return 30*15+(v-30)*20;return 30*15+10*20+(v-40)*25};
+// Prime visites — palier rétroactif : à 41+, toutes les visites passent à 25€
+const calcPV=v=>{if(v<=0)return 0;if(v>=41)return v*25;if(v<=30)return v*15;return 30*15+(v-30)*20};
 const calcCV=va=>{if(va<3000)return 0;if(va<=6000)return va*.08;if(va<=9000)return va*.09;return Math.min(va,15000)*.10};
 const calcPP=n=>n*300+(n>=3?100:0);const calcPI=m=>m*.10;
 const calcPM=(o,r)=>{if(o<=0)return 0;let p=r*.02;const x=(r/o)*100;if(x>=150)p+=500;else if(x>=120)p+=300;return p};
@@ -452,11 +453,11 @@ function App(){
   const[prepaData,setPrepaData]=useState({});const[openFiches,setOpenFiches]=useState({});const[copyMsg,setCopyMsg]=useState("");
   const[todos,setTodos]=useState([]);const[pipeVA,setPipeVA]=useState([]);const[pipeRenouv,setPipeRenouv]=useState([]);const[pipeImpayes,setPipeImpayes]=useState([]);
   const[newTodo,setNewTodo]=useState("");const[newItem,setNewItem]=useState({va:"",renouv:"",imp:""});
-  const[notifs,setNotifs]=useState([]);const[newNotif,setNewNotif]=useState({objet:"",date:"",heure:""});
+  const[notifs,setNotifs]=useState([]);const[newNotif,setNewNotif]=useState({objet:"",date:"",heure:""});const[showNotifForm,setShowNotifForm]=useState(false);
   const[showMoisRef,setShowMoisRef]=useState(false);
   const[showPaste,setShowPaste]=useState(false);const[pasteText,setPasteText]=useState("");
   const[rdvs,setRdvs]=useState({});const[newRdv,setNewRdv]=useState({nom:"",date:"",motif:"Courtoisie"});
-  const[rdvTab,setRdvTab]=useState("mois");
+  // rdvTab supprimé le 29/04 — onglet RDV ne contient plus que la prépa (la saisie unitaire des visites est passée via MonthLive)
   const getRdvKey=idx=>`rdv_${idx}`;const getRdvs=idx=>rdvs[getRdvKey(idx)]||[];const setRdvMonth=(idx,list)=>setRdvs(p=>({...p,[getRdvKey(idx)]:list}));
 
   const parsePrepa=(txt)=>{
@@ -487,13 +488,27 @@ function App(){
   const totals=useMemo(()=>({realMB:data.reduce((s,m)=>s+m.realMB,0),objMB:data.reduce((s,m)=>s+m.objMB,0),visites:data.reduce((s,m)=>s+m.visites,0),va:data.reduce((s,m)=>s+m.va,0),impayes:data.reduce((s,m)=>s+m.impayes,0),parrSig:data.reduce((s,m)=>s+m.parrSig,0)}),[data]);
   const currentM=data[currentIdx];
 
-  const reminders=useMemo(()=>{const r=[];const n=new Date();const day=n.getDay();const date=n.getDate();const last=new Date(n.getFullYear(),n.getMonth()+1,0).getDate();const left=last-date;
-    if(day===5)r.push({type:"warn",icon:"📊",text:"TOPO HEBDO — À envoyer avant 12h"});
+  const reminders=useMemo(()=>{const r=[];const n=new Date();const day=n.getDay();const date=n.getDate();const hour=n.getHours();
+    // Lundi matin → TOPO KPIs
+    if(day===1)r.push({type:"info",icon:"📊",text:"TOPO KPIs — À envoyer ce matin"});
+    // Jeudi → préparer prépas RDV
     if(day===4)r.push({type:"info",icon:"📋",text:"PRÉPAS RDV — Préparer ce soir pour envoi demain"});
-    if(day===5&&n.getHours()<12)r.push({type:"warn",icon:"📋",text:"PRÉPAS RDV — Envoi avant 12h dernier délai"});
-    if(left<=2)r.push({type:"danger",icon:"📊",text:`TOPO FIN DE MOIS — J-${left} !`});
-    else if(left<=4)r.push({type:"warn",icon:"📊",text:`TOPO FIN DE MOIS — J-${left}`});
-    if(day<4)r.push({type:"info",icon:"⏰",text:"Prochain topo : vendredi — Prépas : jeudi soir"});
+    // Vendredi → TOPO HEBDO + envoi prépas
+    if(day===5)r.push({type:"warn",icon:"📊",text:"TOPO HEBDO — À envoyer avant 12h"});
+    if(day===5&&hour<12)r.push({type:"warn",icon:"📋",text:"PRÉPAS RDV — Envoi avant 12h dernier délai"});
+    // Le 15 du mois → 30 parrainages + 10 avis
+    if(date===15){
+      r.push({type:"warn",icon:"🤝",text:"30 PARRAINAGES — À boucler aujourd'hui"});
+      r.push({type:"warn",icon:"⭐",text:"10 AVIS GOOGLE — À boucler aujourd'hui"});
+    } else if(date===13||date===14){
+      const j=15-date;
+      r.push({type:"info",icon:"🤝",text:`PARRAINAGES — Objectif 30 dans J-${j}`});
+      r.push({type:"info",icon:"⭐",text:`AVIS GOOGLE — Objectif 10 dans J-${j}`});
+    }
+    // Filler de planning quand calme (ni 13/14/15, ni jeu/ven)
+    if(day<4&&day!==1&&date!==13&&date!==14&&date!==15){
+      r.push({type:"info",icon:"⏰",text:"Prochain TOPO : vendredi · Prépas : jeudi soir"});
+    }
     return r},[]);
 
   const C={background:"#14141C",border:"1px solid #25254033",borderRadius:12,overflow:"hidden",marginBottom:10};
@@ -563,11 +578,26 @@ function App(){
 
         {/* Tabs (segmented control) */}
         <div className="os-tabs" style={{marginBottom:24,maxWidth:"100%",overflowX:"auto"}}>
-          {[["dashboard","Dashboard"],["rdv","RDV"],["annuel","Annuel"],["cadre","Cadre"],["roadmap","Améliorations"]].map(([k,l])=>(<div key={k} className={"os-tab"+(activeTab===k?" is-active":"")} onClick={()=>setActiveTab(k)}>{l}</div>))}
+          {[["dashboard","Dashboard"],["rdv","Prépa RDV"],["annuel","Annuel"],["cadre","Cadre"],["roadmap","Améliorations"]].map(([k,l])=>(<div key={k} className={"os-tab"+(activeTab===k?" is-active":"")} onClick={()=>setActiveTab(k)}>{l}</div>))}
         </div>
 
 {/* ══ DASHBOARD ══ minimaliste, ultra visuel */}
 {activeTab==="dashboard"&&(<div className="os-rise">
+  {/* Ticker — bandeau "infos 20h" tout en haut, défilement infini, pause au hover */}
+  {reminders.length>0&&(
+    <div className="os-ticker" aria-label="Rappels permanents">
+      <div className="os-ticker__track">
+        {[...reminders,...reminders].map((r,i)=>(
+          <span key={i} className={"os-ticker__item os-ticker__item--"+r.type}>
+            <span className="os-ticker__dot"/>
+            <span className="os-ticker__icon">{r.icon}</span>
+            <span className="os-ticker__text">{r.text}</span>
+          </span>
+        ))}
+      </div>
+    </div>
+  )}
+
   {/* Hero — KPI principal animé + 4 cells */}
   <Hero m={currentM} monthName={MONTHS[currentIdx]}/>
 
@@ -617,23 +647,58 @@ function App(){
     </div>
   </div>
 
-  {/* Reminders compacts (uniquement si présents) */}
-  {reminders.length>0&&(
-    <div style={{display:"flex",flexDirection:"column",gap:6,marginBottom:18}}>
-      {reminders.map((r,i)=>{
-        const c=r.type==="danger"?"#60A5FA":r.type==="warn"?"#60A5FA":"#3B82F6";
-        return(<div key={i} style={{padding:"10px 14px",borderRadius:10,fontSize:12,display:"flex",alignItems:"center",gap:10,background:`rgba(${r.type==="danger"?"244,63,94":r.type==="warn"?"245,158,11":"59,130,246"},0.08)`,border:`1px solid rgba(${r.type==="danger"?"244,63,94":r.type==="warn"?"245,158,11":"59,130,246"},0.25)`,backdropFilter:"blur(8px)"}}>
-          <span style={{width:8,height:8,borderRadius:"50%",background:c,boxShadow:`0 0 12px ${c}`,flexShrink:0}}/>
-          <span style={{color:"#F5F5FA",fontWeight:r.type==="danger"?500:400}}>{r.text}</span>
-        </div>);
-      })}
-    </div>
-  )}
+  {/* Reminders compacts retirés — désormais affichés en ticker tout en haut */}
 
   {/* Mois en cours — bloc compact unifié */}
   <MonthLive m={currentM} idx={currentIdx} monthName={MONTHS[currentIdx]} update={update}/>
 
-  {/* Grille de drawers — TO DO + Rappels + Renouv + VA + Impayés + Mois ref */}
+  {/* Mes rappels — bloc compact full-width (sorti de la grille pour rééquilibrer à 4) */}
+  <div className="os-rappels-compact">
+    <div className="os-rappels-compact__head">
+      <span className="os-rappels-compact__title">
+        <span style={{color:"#3B82F6",fontSize:14}}>⏰</span>
+        <span>Mes rappels</span>
+        <span className="os-tag">{notifs.filter(n=>!n.done).length} actif{notifs.filter(n=>!n.done).length>1?"s":""}</span>
+      </span>
+      <span className="os-rappels-compact__add" onClick={()=>setShowNotifForm(s=>!s)}>{showNotifForm?"× Fermer":"+ Rappel"}</span>
+    </div>
+    {showNotifForm&&(
+      <div className="os-rappels-compact__form">
+        <input className="os-input" value={newNotif.objet} onChange={e=>setNewNotif(p=>({...p,objet:e.target.value}))} placeholder="Objet du rappel" style={{flex:1,minWidth:140,fontSize:12}}/>
+        <input className="os-input" type="date" value={newNotif.date} onChange={e=>setNewNotif(p=>({...p,date:e.target.value}))} style={{width:140,fontSize:11}}/>
+        <input className="os-input" type="time" value={newNotif.heure} onChange={e=>setNewNotif(p=>({...p,heure:e.target.value}))} style={{width:90,fontSize:11}}/>
+        <button className="os-btn os-btn--blue" onClick={()=>{if(newNotif.objet.trim()&&newNotif.date){setNotifs(p=>[...p,{...newNotif,done:false}].sort((a,b)=>new Date(a.date+"T"+(a.heure||"00:00"))-new Date(b.date+"T"+(b.heure||"00:00"))));setNewNotif({objet:"",date:"",heure:""});setShowNotifForm(false)}}}>✓</button>
+      </div>
+    )}
+    <div className="os-rappels-compact__list">
+      {notifs.length===0&&<span className="os-rappels-compact__empty">Aucun rappel programmé · clean ✨</span>}
+      {notifs.map((n,i)=>{
+        const d=new Date(n.date+"T"+(n.heure||"00:00"));
+        const now2=new Date();
+        const diff=Math.ceil((d-now2)/(1000*60*60*24));
+        const isPast=d<now2&&!n.done;
+        const isToday=diff===0&&!n.done;
+        const isSoon=diff>0&&diff<=2&&!n.done;
+        const tag=isPast?"EN RETARD":isToday?"AUJ.":isSoon?`J-${diff}`:(n.date?new Date(n.date+"T00:00").toLocaleDateString("fr-FR",{day:"2-digit",month:"2-digit"}):"");
+        const cls=["os-rappels-pill"];
+        if(n.done)cls.push("is-done");
+        else if(isPast)cls.push("is-past");
+        else if(isToday)cls.push("is-today");
+        else if(isSoon)cls.push("is-soon");
+        return(
+          <div key={i} className={cls.join(" ")}>
+            <span className="os-rappels-pill__check" onClick={()=>setNotifs(p=>p.map((x,j)=>j===i?{...x,done:!x.done}:x))} title={n.done?"Décocher":"Marquer fait"}>{n.done?"✓":""}</span>
+            <span className="os-rappels-pill__text">{n.objet}</span>
+            <span className="os-rappels-pill__date">{tag}{n.heure&&!n.done?` · ${n.heure}`:""}</span>
+            <span className="os-rappels-pill__close" onClick={()=>setNotifs(p=>p.filter((_,j)=>j!==i))} title="Supprimer">×</span>
+          </div>
+        );
+      })}
+    </div>
+    {notifs.filter(n=>n.done).length>0&&<div className="os-rappels-compact__clean" onClick={()=>setNotifs(p=>p.filter(n=>!n.done))}>Nettoyer terminés</div>}
+  </div>
+
+  {/* Grille de drawers — TO DO + Renouv + VA + Impayés (4 blocs alignés sur 2 colonnes) */}
   <div className="os-drawer-grid">
 
     {/* TO DO */}
@@ -651,26 +716,7 @@ function App(){
       {todos.filter(t=>t.done).length>0&&<div onClick={()=>setTodos(p=>p.filter(t=>!t.done))} style={{marginTop:8,fontSize:10,color:"#7A7E8C",cursor:"pointer",textAlign:"right",fontFamily:"'JetBrains Mono',monospace"}}>Nettoyer terminées</div>}
     </Drawer>
 
-    {/* Mes rappels */}
-    <Drawer title="Mes rappels" icon="⏰" badge={`${notifs.filter(n=>!n.done).length} actif${notifs.filter(n=>!n.done).length>1?"s":""}`}>
-      <div style={{display:"flex",gap:6,marginBottom:12,flexWrap:"wrap"}}>
-        <input className="os-input" value={newNotif.objet} onChange={e=>setNewNotif(p=>({...p,objet:e.target.value}))} placeholder="Objet" style={{flex:1,minWidth:120,fontSize:13}}/>
-        <input className="os-input" type="date" value={newNotif.date} onChange={e=>setNewNotif(p=>({...p,date:e.target.value}))} style={{width:130,fontSize:11}}/>
-        <input className="os-input" type="time" value={newNotif.heure} onChange={e=>setNewNotif(p=>({...p,heure:e.target.value}))} style={{width:80,fontSize:11}}/>
-        <button className="os-btn os-btn--blue" onClick={()=>{if(newNotif.objet.trim()&&newNotif.date){setNotifs(p=>[...p,{...newNotif,done:false}].sort((a,b)=>new Date(a.date+"T"+(a.heure||"00:00"))-new Date(b.date+"T"+(b.heure||"00:00"))));setNewNotif({objet:"",date:"",heure:""})}}}>+</button>
-      </div>
-      {notifs.length===0&&<div style={{fontSize:12,color:"#7A7E8C",textAlign:"center",padding:14,fontStyle:"italic"}}>Aucun rappel</div>}
-      {notifs.map((n,i)=>{const d=new Date(n.date+"T"+(n.heure||"00:00"));const now2=new Date();const diff=Math.ceil((d-now2)/(1000*60*60*24));const isPast=d<now2;const isToday=diff===0;const isSoon=diff>0&&diff<=2;return(<div key={i} style={{display:"flex",alignItems:"center",gap:10,padding:"7px 0",borderBottom:"1px solid rgba(255,255,255,0.05)"}}>
-        <div onClick={()=>setNotifs(p=>p.map((x,j)=>j===i?{...x,done:!x.done}:x))} style={{width:17,height:17,borderRadius:5,border:`1.5px solid ${n.done?"#60A5FA":"#3B82F6"}`,background:n.done?"rgba(96,165,250,0.18)":"transparent",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",fontSize:11,color:"#60A5FA",flexShrink:0}}>{n.done?"✓":""}</div>
-        <div style={{width:7,height:7,borderRadius:"50%",background:n.done?"#7A7E8C":"#3B82F6",boxShadow:n.done?"none":"0 0 10px #3B82F6",flexShrink:0}}/>
-        <div style={{flex:1,minWidth:0}}>
-          <div style={{fontSize:13,color:n.done?"#7A7E8C":"#F5F5FA",textDecoration:n.done?"line-through":"none"}}>{n.objet}</div>
-          <div style={{fontSize:10,color:n.done?"#7A7E8C":"#A0A4B0",fontFamily:"'JetBrains Mono',monospace",letterSpacing:"0.04em"}}>{n.date}{n.heure?" · "+n.heure:""}{isPast&&!n.done?" · EN RETARD":isToday&&!n.done?" · AUJOURD'HUI":isSoon&&!n.done?` · J-${diff}`:""}</div>
-        </div>
-        <span onClick={()=>setNotifs(p=>p.filter((_,j)=>j!==i))} style={{color:"#7A7E8C",cursor:"pointer",fontSize:14,padding:"0 6px",opacity:0.6}}>×</span>
-      </div>)})}
-      {notifs.filter(n=>n.done).length>0&&<div onClick={()=>setNotifs(p=>p.filter(n=>!n.done))} style={{marginTop:8,fontSize:10,color:"#7A7E8C",cursor:"pointer",textAlign:"right",fontFamily:"'JetBrains Mono',monospace"}}>Nettoyer terminés</div>}
-    </Drawer>
+    {/* Mes rappels — sorti de la grille pour aérer (bloc compact placé au-dessus) */}
 
     {/* Renouvellements */}
     <Drawer title="Renouvellements" icon="↻" badge={`${pipeRenouv.length} dossier${pipeRenouv.length>1?"s":""}`}>
@@ -793,19 +839,8 @@ function App(){
   ))}
 </div>)}
 
-{/* ══ RDV DU MOIS ══ */}
-{/* ══ RDV (fusion mois + prépa) ══ */}
-{activeTab==="rdv"&&(
-  <div className="os-rise" style={{marginBottom:14}}>
-    <div className="os-tabs" style={{marginBottom:18,display:"inline-flex",width:"auto"}}>
-      <div className={"os-tab"+(rdvTab==="mois"?" is-active":"")} onClick={()=>setRdvTab("mois")}>📅 Du mois</div>
-      <div className={"os-tab"+(rdvTab==="prepa"?" is-active":"")} onClick={()=>setRdvTab("prepa")}>📋 Prépa par semaine</div>
-    </div>
-  </div>
-)}
-
-{activeTab==="rdv"&&rdvTab==="mois"&&(()=>{
-  // Wrapper "os-rise" pour stagger fade-in
+{/* (Section "RDV du mois" retirée le 29/04 — la saisie unitaire des visites était redondante avec MonthLive ; calcul de prime visites désormais basé directement sur le champ "visites réalisées" du mois courant) */}
+{false&&(()=>{
   const list=getRdvs(currentIdx);
   const nb=list.length;
   const primeVisites=nb<=0?0:nb<=30?nb*15:nb<=40?30*15+(nb-30)*20:30*15+10*20+(nb-40)*25;
@@ -877,7 +912,7 @@ function App(){
 })()}
 
 {/* ══ PRÉPA RDV ══ */}
-{activeTab==="rdv"&&rdvTab==="prepa"&&(()=>{
+{activeTab==="rdv"&&(()=>{
   const week=getWeek(prepaWeek);const addT=()=>setWeek(prepaWeek,{...week,trajets:[...week.trajets,{jour:"Lundi",heure:"",depart:"",arrivee:"",duree:"",km:""}]});
   const updT=(i,f,v)=>{const t=[...week.trajets];t[i]={...t[i],[f]:v};setWeek(prepaWeek,{...week,trajets:t})};const delT=i=>setWeek(prepaWeek,{...week,trajets:week.trajets.filter((_,j)=>j!==i)});
   const addF=()=>setWeek(prepaWeek,{...week,fiches:[...week.fiches,defaultFiche()]});const updF=(i,f,v)=>{const fi=[...week.fiches];fi[i]={...fi[i],[f]:v};setWeek(prepaWeek,{...week,fiches:fi})};const delF=i=>setWeek(prepaWeek,{...week,fiches:week.fiches.filter((_,j)=>j!==i)});
