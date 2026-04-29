@@ -1281,6 +1281,7 @@ body::before {
   align-items: center;
   height: 100%;
   white-space: nowrap;
+  flex-shrink: 0;
   /* La durée est passée en inline-style par le composant Ticker (calculée dynamiquement
      pour vitesse constante ~80 px/s indépendamment du contenu / breakpoint). */
   animation: os-ticker-scroll 40s linear infinite;
@@ -1291,6 +1292,9 @@ body::before {
   align-items: center;
   height: 100%;
   flex-shrink: 0;
+  /* important : pas de wrap, chaque passe reste sur 1 ligne pour mesure correcte */
+  flex-wrap: nowrap;
+  white-space: nowrap;
 }
 .os-ticker:hover .os-ticker__track { animation-play-state: paused; }
 .os-ticker__item {

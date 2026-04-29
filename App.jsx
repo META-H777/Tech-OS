@@ -458,33 +458,43 @@ function PerfChart({m}){
 function Ticker({reminders}){
   const containerRef=useRef(null);
   const passRef=useRef(null);
-  const[reps,setReps]=useState(4);
+  // reps initial volontairement haut (8) pour qu'au tout 1er paint la barre soit DEJA pleine,
+  // même si la mesure dynamique met un tick à se stabiliser (fonts en cours de chargement, etc.)
+  const[reps,setReps]=useState(8);
   const[duration,setDuration]=useState(40);
 
   useLayoutEffect(()=>{
     if(!reminders.length||!containerRef.current||!passRef.current)return;
     const recalc=()=>{
-      const containerW=containerRef.current?.offsetWidth||0;
-      const renderedPassW=passRef.current?.offsetWidth||0;
+      const cont=containerRef.current;
+      const pass=passRef.current;
+      if(!cont||!pass)return;
+      const containerW=cont.offsetWidth||0;
+      const renderedPassW=pass.offsetWidth||0;
       if(containerW<=0||renderedPassW<=0)return;
       // Largeur naturelle d'1 passe = passe rendue / nb répétitions actuelles
       const naturalPassW=renderedPassW/reps;
       if(naturalPassW<=0)return;
-      // On veut qu'1 passe finale (reps × naturelle) couvre ≥ 1.2 × container
-      // Comme on duplique la passe en 2 (seamless), le track total = 2 × passe finale ≥ 2.4 × container
-      const neededReps=Math.max(2,Math.ceil((containerW*1.2)/naturalPassW));
-      // Vitesse cible : ~80 px/s — durée = largeur d'1 passe finale / 80
+      // On veut qu'1 passe finale (reps × naturelle) couvre ≥ 1.2 × container.
+      // Le track contenant 2 passes identiques fait alors ≥ 2.4 × container → seamless garanti.
+      // Plancher à 4 répétitions (sécurité visuelle même sur écran ultra-large avec mesure foireuse).
+      const neededReps=Math.max(4,Math.ceil((containerW*1.2)/naturalPassW));
+      // Vitesse cible ~80 px/s — durée d'1 passe finale = naturalPassW × reps / 80
       const finalPassW=naturalPassW*neededReps;
       const newDuration=Math.max(18,Math.min(90,Math.round(finalPassW/80)));
       if(neededReps!==reps)setReps(neededReps);
       if(Math.abs(newDuration-duration)>=2)setDuration(newDuration);
     };
+    // 3 mesures successives pour absorber : layout initial / fonts loaded / animations CSS qui modifient la taille
     recalc();
+    const t1=setTimeout(recalc,100);
+    const t2=setTimeout(recalc,500);
     const ro=new ResizeObserver(recalc);
     ro.observe(containerRef.current);
-    // Aussi sur window resize (sécurité au cas où ResizeObserver loupe un breakpoint CSS)
     window.addEventListener("resize",recalc);
-    return()=>{ro.disconnect();window.removeEventListener("resize",recalc)};
+    // Quand les fonts sont prêtes, recalc (les emojis et glyphes peuvent changer la largeur)
+    if(document.fonts&&document.fonts.ready)document.fonts.ready.then(recalc).catch(()=>{});
+    return()=>{clearTimeout(t1);clearTimeout(t2);ro.disconnect();window.removeEventListener("resize",recalc)};
   },[reminders.length,reps,duration]);
 
   if(!reminders.length)return null;
