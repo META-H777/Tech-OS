@@ -1,4 +1,4 @@
-const { useState, useEffect, useCallback, useMemo } = React;
+const { useState, useEffect, useCallback, useMemo, useRef, useLayoutEffect } = React;
 
 const MONTHS=["Janvier","Février","Mars","Avril","Mai","Juin","Juillet","Août","Septembre","Octobre","Novembre","Décembre"];
 const SHORT=["Jan","Fév","Mar","Avr","Mai","Jun","Jul","Aoû","Sep","Oct","Nov","Déc"];
@@ -447,6 +447,79 @@ function PerfChart({m}){
   );
 }
 
+// ═════════════════════════════════════════════════════════════════════════════
+// Ticker — bandeau "infos 20h" à boucle infinie fluide
+// • Mesure dynamiquement la largeur du container et celle d'une "passe naturelle"
+//   (1× la séquence des reminders), puis répète assez de fois pour remplir
+//   au moins 2× la largeur du container → loop seamless via translateX(-50%).
+// • ResizeObserver pour rester fluide sur tout breakpoint (desktop/tablet/mobile).
+// • Vitesse de défilement constante (~80 px/s) quel que soit le contenu.
+// ═════════════════════════════════════════════════════════════════════════════
+function Ticker({reminders}){
+  const containerRef=useRef(null);
+  const passRef=useRef(null);
+  const[reps,setReps]=useState(4);
+  const[duration,setDuration]=useState(40);
+
+  useLayoutEffect(()=>{
+    if(!reminders.length||!containerRef.current||!passRef.current)return;
+    const recalc=()=>{
+      const containerW=containerRef.current?.offsetWidth||0;
+      const renderedPassW=passRef.current?.offsetWidth||0;
+      if(containerW<=0||renderedPassW<=0)return;
+      // Largeur naturelle d'1 passe = passe rendue / nb répétitions actuelles
+      const naturalPassW=renderedPassW/reps;
+      if(naturalPassW<=0)return;
+      // On veut qu'1 passe finale (reps × naturelle) couvre ≥ 1.2 × container
+      // Comme on duplique la passe en 2 (seamless), le track total = 2 × passe finale ≥ 2.4 × container
+      const neededReps=Math.max(2,Math.ceil((containerW*1.2)/naturalPassW));
+      // Vitesse cible : ~80 px/s — durée = largeur d'1 passe finale / 80
+      const finalPassW=naturalPassW*neededReps;
+      const newDuration=Math.max(18,Math.min(90,Math.round(finalPassW/80)));
+      if(neededReps!==reps)setReps(neededReps);
+      if(Math.abs(newDuration-duration)>=2)setDuration(newDuration);
+    };
+    recalc();
+    const ro=new ResizeObserver(recalc);
+    ro.observe(containerRef.current);
+    // Aussi sur window resize (sécurité au cas où ResizeObserver loupe un breakpoint CSS)
+    window.addEventListener("resize",recalc);
+    return()=>{ro.disconnect();window.removeEventListener("resize",recalc)};
+  },[reminders.length,reps,duration]);
+
+  if(!reminders.length)return null;
+
+  // Construit 1 passe = reps × reminders
+  const buildPass=(prefix,setRef)=>{
+    const items=[];
+    for(let i=0;i<reps;i++){
+      reminders.forEach((r,j)=>{
+        items.push(
+          <span key={`${prefix}-${i}-${j}`} className={"os-ticker__item os-ticker__item--"+r.type}>
+            <span className="os-ticker__dot"/>
+            <span className="os-ticker__icon">{r.icon}</span>
+            <span className="os-ticker__text">{r.text}</span>
+          </span>
+        );
+      });
+    }
+    return (
+      <div className="os-ticker__pass" ref={setRef||null} aria-hidden={!setRef||undefined}>
+        {items}
+      </div>
+    );
+  };
+
+  return (
+    <div className="os-ticker" ref={containerRef} aria-label="Rappels permanents">
+      <div className="os-ticker__track" style={{animationDuration:`${duration}s`}}>
+        {buildPass("a",passRef)}
+        {buildPass("b",null)}
+      </div>
+    </div>
+  );
+}
+
 function App(){
   const[data,setData]=useState(defaultData);const[loaded,setLoaded]=useState(false);const[activeTab,setActiveTab]=useState("dashboard");const[openMonths,setOpenMonths]=useState({});
   const[prepaWeek,setPrepaWeek]=useState(()=>{const n=new Date(),s=new Date(n.getFullYear(),0,1);return Math.ceil(((n-s)/86400000+s.getDay()+1)/7)});
@@ -583,20 +656,8 @@ function App(){
 
 {/* ══ DASHBOARD ══ minimaliste, ultra visuel */}
 {activeTab==="dashboard"&&(<div className="os-rise">
-  {/* Ticker — bandeau "infos 20h" tout en haut, défilement infini, pause au hover */}
-  {reminders.length>0&&(
-    <div className="os-ticker" aria-label="Rappels permanents">
-      <div className="os-ticker__track">
-        {[...reminders,...reminders].map((r,i)=>(
-          <span key={i} className={"os-ticker__item os-ticker__item--"+r.type}>
-            <span className="os-ticker__dot"/>
-            <span className="os-ticker__icon">{r.icon}</span>
-            <span className="os-ticker__text">{r.text}</span>
-          </span>
-        ))}
-      </div>
-    </div>
-  )}
+  {/* Ticker — bandeau "infos 20h" tout en haut, mesure dynamique pour remplir TOUTE la barre, pause au hover */}
+  <Ticker reminders={reminders}/>
 
   {/* Hero — KPI principal animé + 4 cells */}
   <Hero m={currentM} monthName={MONTHS[currentIdx]}/>
